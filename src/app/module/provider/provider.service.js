@@ -367,7 +367,10 @@ const updateProviderProfile = async (req) => {
   }
 
   // Store updates in pendingUpdates field for admin approval
-  existingProvider.pendingUpdates = updateData;
+  existingProvider.pendingUpdates = {
+    ...updateData,
+    submittedAt: new Date(),
+  };
   await existingProvider.save();
 
   // Notify admin about the update request
@@ -962,7 +965,7 @@ const getPendingProviderUpdates = async () => {
   })
     .select("companyName email phone pendingUpdates createdAt updatedAt")
     .populate("authId", "email")
-    .sort({ updatedAt: -1 });
+    .sort({ "pendingUpdates.submittedAt": -1 });
 
   return providers;
 };
@@ -983,9 +986,11 @@ const approveProviderUpdate = async (payload) => {
     );
   }
 
-  // Filter out any NaN values before applying updates
+  // Filter out any NaN values and internal tracking fields before applying updates
   const sanitizedUpdates = {};
   for (const [key, value] of Object.entries(provider.pendingUpdates)) {
+    // Skip internal tracking field
+    if (key === 'submittedAt') continue;
     // Skip NaN values for numeric fields
     if (typeof value === 'number' && isNaN(value)) {
       console.warn(`Skipping NaN value for field: ${key}`);
