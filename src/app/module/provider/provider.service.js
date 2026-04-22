@@ -899,14 +899,63 @@ const confirmLeadPayment = async (userData, payload) => {
   return { message: "Payment confirmed and request assigned" };
 };
 
-// Get All Providers (Admin)
+// Get All Providers (Admin) — only verified, non-rejected providers
 const getAllProviders = async (query) => {
+  // Strip these from query so QueryBuilder doesn't conflict with the base filter
+  const { isVerified: _iv, isRejected: _ir, ...filteredQuery } = query;
+
   const providerQuery = new QueryBuilder(
-    Provider.find({})
+    Provider.find({ isVerified: true, isRejected: { $ne: true } })
       .populate("serviceCategories", "name icon")
       .populate("authId", "name email profile_image isVerified phoneNumber website")
       .lean(),
-    query
+    filteredQuery
+  )
+    .search(["companyName", "serviceLocation"])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const [providers, meta] = await Promise.all([
+    providerQuery.modelQuery,
+    providerQuery.countTotal(),
+  ]);
+
+  return { meta, providers };
+};
+
+// Get Providers Pending Admin Review (Admin)
+// type=unverified      → registered, not yet reviewed (isVerified:false, isRejected:false)
+// type=rejected        → admin-rejected providers
+// type=pending_updates → submitted profile update requests
+// (no type)            → both unverified-pending AND pending_updates combined
+const getPendingReviewProviders = async (query) => {
+  const { type, isVerified: _iv, isRejected: _ir, ...restQuery } = query;
+
+  let baseFilter;
+
+  if (type === "unverified") {
+    baseFilter = { isVerified: false, isRejected: false };
+  } else if (type === "rejected") {
+    baseFilter = { isRejected: true };
+  } else if (type === "pending_updates") {
+    baseFilter = { pendingUpdates: { $ne: null } };
+  } else {
+    baseFilter = {
+      $or: [
+        { isVerified: false, isRejected: false },
+        { pendingUpdates: { $ne: null } },
+      ],
+    };
+  }
+
+  const providerQuery = new QueryBuilder(
+    Provider.find(baseFilter)
+      .populate("serviceCategories", "name icon")
+      .populate("authId", "name email profile_image phoneNumber")
+      .lean(),
+    restQuery
   )
     .search(["companyName", "serviceLocation"])
     .filter()
@@ -963,8 +1012,8 @@ const getPendingProviderUpdates = async () => {
   const providers = await Provider.find({
     pendingUpdates: { $ne: null },
   })
-    .select("companyName email phone pendingUpdates createdAt updatedAt")
-    .populate("authId", "email")
+    .populate("authId", "name email phoneNumber profile_image")
+    .populate("serviceCategories", "name icon")
     .sort({ "pendingUpdates.submittedAt": -1 });
 
   return providers;
@@ -1069,6 +1118,7 @@ module.exports = {
   getProviderById,
   verifyProvider,
   getPendingProviderUpdates,
+  getPendingReviewProviders,
   approveProviderUpdate,
   rejectProviderUpdate,
 };

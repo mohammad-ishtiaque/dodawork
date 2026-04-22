@@ -113,6 +113,18 @@ const verifyProvider = catchAsync(async (req, res) => {
 });
 
 
+// Get Providers Pending Admin Review (Admin)
+// ?type=unverified | rejected | pending_updates | (none = both)
+const getPendingReviewProviders = catchAsync(async (req, res) => {
+  const result = await ProviderService.getPendingReviewProviders(req.query);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Pending review providers retrieved successfully",
+    data: result,
+  });
+});
+
 // Get Providers with Pending Updates (Admin)
 const getPendingProviderUpdates = catchAsync(async (req, res) => {
   const result = await ProviderService.getPendingProviderUpdates();
@@ -154,10 +166,11 @@ const ProviderController = {
   getPotentialRequestById,
   handleRequestResponse,
   markRequestComplete,
-  getAllProviders,  
+  getAllProviders,
   getProviderById,
   verifyProvider,
   getPendingProviderUpdates,
+  getPendingReviewProviders,
   approveProviderUpdate,
   rejectProviderUpdate,
 };

@@ -75,6 +75,11 @@ router
     ProviderController.verifyProvider
   )
   .get(
+    "/pending-review",
+    auth(config.auth_level.admin),
+    ProviderController.getPendingReviewProviders
+  )
+  .get(
     "/pending-updates",
     auth(config.auth_level.admin),
     ProviderController.getPendingProviderUpdates
