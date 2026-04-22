@@ -48,6 +48,10 @@ const ServiceRequestSchema = new Schema(
       type: String,
       required: true,
     },
+    postalCode: {
+      type: String,
+      default: null,
+    },
     latitude: {
       type: Number,
       required: true,

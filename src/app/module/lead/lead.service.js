@@ -25,7 +25,7 @@ const calculateLeadPrice = async (serviceRequest) => {
     // The price in Category is stored in dollars (e.g., 129).
     // Stripe expects the amount in cents (e.g., 12900).
     const basePrice = category?.price || 5; // Default to $5 if category not found or no price set.
-    console.log("basePrice", basePrice)
+    // console.log("basePrice", basePrice)
     // Calculate final price in cents
     const finalPrice = Math.round(basePrice * 100);
 

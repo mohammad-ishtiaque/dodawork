@@ -31,6 +31,10 @@ const UserSchema = new Schema(
     address: {
       type: String,
     },
+    postalCode: {
+      type: String,
+      default: null,
+    },
     latitude: {
       type: String,
     },

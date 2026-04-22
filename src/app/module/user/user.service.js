@@ -9,6 +9,7 @@ const unlinkFile = require("../../../util/unlinkFile");
 const { deleteFromS3 } = require("../../../util/s3.util");
 const validateFields = require("../../../util/validateFields");
 const QueryBuilder = require("../../../builder/queryBuilder");
+const { getPostalCodeFromCoords } = require("../../../util/geocode.util");
 
 
 
@@ -32,6 +33,14 @@ const updateProfile = async (req) => {
         unlinkFile(existingUser.profile_image);
       }
     }
+  }
+
+  // Auto-resolve postal code from lat/lng if location is being updated
+  if (data.latitude && data.longitude && !data.postalCode) {
+    updateData.postalCode = await getPostalCodeFromCoords(
+      parseFloat(data.latitude),
+      parseFloat(data.longitude)
+    );
   }
 
   const [auth, user] = await Promise.all([

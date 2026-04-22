@@ -9,6 +9,7 @@ const QueryBuilder = require("../../../builder/queryBuilder");
 const mongoose = require("mongoose");
 const postNotification = require("../../../util/postNotification");
 const { calculateLeadPrice } = require("../lead/lead.service");
+const { getPostalCodeFromCoords } = require("../../../util/geocode.util");
 
 // Helper function to calculate distance
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -119,6 +120,15 @@ const createServiceRequest = async (req) => {
     latitude: parseFloat(data.latitude),
     longitude: parseFloat(data.longitude),
   };
+
+  // Resolve postal code: use frontend-provided value if present, otherwise
+  // reverse-geocode from the precise lat/lng. Never blocks or throws.
+  serviceRequestData.postalCode =
+    data.postalCode ||
+    (await getPostalCodeFromCoords(
+      serviceRequestData.latitude,
+      serviceRequestData.longitude
+    ));
 
   if (files && files.attachments) {
     serviceRequestData.attachments = files.attachments.map((file) => file.location);

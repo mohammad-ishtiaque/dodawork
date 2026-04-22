@@ -61,6 +61,10 @@ const ProviderSchema = new Schema(
       type: String,
       trim: true,
     },
+    postalCode: {
+      type: String,
+      default: null,
+    },
     contactPerson: {
       type: String,
       trim: true,

@@ -10,6 +10,7 @@ const ApiError = require("../../../error/ApiError");
 const validateFields = require("../../../util/validateFields");
 const unlinkFile = require("../../../util/unlinkFile");
 const postNotification = require("../../../util/postNotification");
+const { getPostalCodeFromCoords } = require("../../../util/geocode.util");
 
 // Helper function to calculate distance
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -185,15 +186,20 @@ const registerProvider = async (req) => {
     );
   }
 
+  const lat = parseFloat(data.latitude);
+  const lng = parseFloat(data.longitude);
+
   const providerData = {
     authId: user.authId,
     companyName: data.companyName,
     website: data.website,
     serviceCategories: serviceCategories,
-    latitude: parseFloat(data.latitude),
-    longitude: parseFloat(data.longitude),
+    latitude: lat,
+    longitude: lng,
     coveredRadius: parseFloat(data.coveredRadius),
     serviceLocation: data.serviceLocation,
+    postalCode:
+      data.postalCode || (await getPostalCodeFromCoords(lat, lng)),
     contactPerson: data.contactPerson,
     workingHours: JSON.parse(data.workingHours || "[]"),
   };
@@ -348,7 +354,17 @@ const updateProviderProfile = async (req) => {
     if (!isNaN(latitude) && !isNaN(longitude)) {
       updateData.latitude = latitude;
       updateData.longitude = longitude;
+
+      // Re-resolve postal code when location changes
+      if (data.postalCode !== undefined) {
+        updateData.postalCode = data.postalCode || null;
+      } else {
+        updateData.postalCode = await getPostalCodeFromCoords(latitude, longitude);
+      }
     }
+  } else if (data.postalCode !== undefined) {
+    // Location unchanged but postalCode explicitly provided
+    updateData.postalCode = data.postalCode || null;
   }
 
   if (data.workingHours) {
