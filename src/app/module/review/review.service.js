@@ -184,14 +184,14 @@ const getReviewsForProvider = async (userData, query) => {
   
   const providerId = provider._id;
   
-  console.log("Provider._id selected by findOne:", providerId);
-  console.log("userData.userId from JWT:", userData.userId);
-  console.log("Do they match?", providerId.toString() === userData.userId);
+  // console.log("Provider._id selected by findOne:", providerId);
+  // console.log("userData.userId from JWT:", userData.userId);
+  // console.log("Do they match?", providerId.toString() === userData.userId);
   
   // Test direct query without QueryBuilder
   const directTest = await Review.find({ providerId }).lean();
-  console.log("Direct query result count:", directTest.length);
-  console.log("Direct query results:", directTest);
+  // console.log("Direct query result count:", directTest.length);
+  // console.log("Direct query results:", directTest);
 
   const reviewQuery = new QueryBuilder(
     Review.find({ providerId })
