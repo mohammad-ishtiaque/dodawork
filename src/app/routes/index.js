@@ -1,0 +1,90 @@
+const express = require("express");
+const router = express.Router();
+const AuthRoutes = require("../module/auth/auth.routes");
+const AdminRoutes = require("../module/admin/admin.routes");
+const SuperAdminRoutes = require("../module/superAdmin/superAdmin.routes");
+const UserRoutes = require("../module/user/user.routes");
+const ServiceRequestRoutes = require("../module/serviceRequest/serviceRequest.routes");
+const CategoryRoutes = require("../module/category/category.routes");
+// const DashboardRoutes = require("../module/dashboard/dashboard.routes");
+const ManageRoutes = require("../module/manage/manage.routes");
+const ProviderRoutes = require("../module/provider/provider.routes")
+const NotificationRoutes = require("../module/notification/notification.routes")
+const ReviewRoutes = require("../module/review/review.routes")
+const ChatRoutes = require("../module/chat/conversation.router")
+const PhoneVerificationRoutes = require("../module/phoneVerification/phoneVerification.routes")
+const LeadRoutes = require("../module/lead/lead.routes");
+// const FeedbackRoutes = require("../module/feedback/feedback.routes");
+// const PostRoutes = require("../module/post/post.routes");
+// const SubscriptionPlanRoutes = require("../module/subscriptionPlan/subscriptionPlan.routes");
+// const SubscriptionPlanRoutes = require("../module/subscriptionPlan/subscriptionPlan.routes");
+const PaymentRoutes = require("../module/payment/payment.routes");
+
+const EmailVerificationRoutes = require("../module/emailVerification/emailVerification.routes");
+
+const moduleRoutes = [
+  {
+    path: "/auth",
+    route: AuthRoutes,
+  },
+  {
+    path: "/user",
+    route: UserRoutes,
+  },
+  {
+    path: "/admin",
+    route: AdminRoutes,
+  },
+  {
+    path: "/super-admin",
+    route: SuperAdminRoutes,
+  },
+  {
+    path: "/service-requests",
+    route: ServiceRequestRoutes,
+  },
+  {
+    path: "/category",
+    route: CategoryRoutes,
+  },
+  {
+    path: "/provider",
+    route: ProviderRoutes
+  },
+  {
+    path: "/notification",
+    route: NotificationRoutes
+  },
+  {
+    path: "/review",
+    route: ReviewRoutes
+  },
+  {
+    path: "/chat",
+    route: ChatRoutes
+  },
+  {
+    path: "/phone-verification",
+    route: PhoneVerificationRoutes,
+  },
+  {
+    path: "/email-verification",
+    route: EmailVerificationRoutes,
+  },
+  {
+    path: "/leads",
+    route: LeadRoutes,
+  },
+  {
+    path: "/manage",
+    route: ManageRoutes,
+  },
+  {
+    path: "/payment",
+    route: PaymentRoutes,
+  },
+];
+
+moduleRoutes.forEach((route) => router.use(route.path, route.route));
+
+module.exports = router;

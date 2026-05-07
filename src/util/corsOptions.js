@@ -9,9 +9,7 @@ const corsOptions = {
     "http://3.96.86.190:3006",
     "http://10.10.20.43:3082",
     "https://dashboard.dodawork.com",
-    "http://dashboard.dodawork.com",
-    "https://www.dodawork.com",
-    "http://www.dodawork.com"
+    "https://www.dodawork.com"
   ],
   credentials: true,
 };
