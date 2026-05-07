@@ -108,13 +108,6 @@ const sendEmailOtp = async (payload) => {
     throw new ApiError(status.BAD_REQUEST, "Invalid email address format.");
   }
 
-  if (!checkRateLimit(lowercaseEmail)) {
-    throw new ApiError(
-      status.TOO_MANY_REQUESTS,
-      "Too many verification requests. Please try again later."
-    );
-  }
-
   if (!["USER", "PROVIDER"].includes(userType)) {
     throw new ApiError(
       status.BAD_REQUEST,
@@ -123,6 +116,21 @@ const sendEmailOtp = async (payload) => {
   }
 
   let auth = await Auth.findOne({ email: lowercaseEmail });
+
+  if (!checkRateLimit(lowercaseEmail)) {
+    // If a valid OTP is already pending (sent by a concurrent request), return success silently
+    if (auth && auth.activationCode && auth.activationCodeExpire && Date.now() < auth.activationCodeExpire) {
+      return {
+        message: "Email verification code sent successfully",
+        email: auth.email,
+        expiresIn: "3 minutes",
+      };
+    }
+    throw new ApiError(
+      status.TOO_MANY_REQUESTS,
+      "Too many verification requests. Please try again later."
+    );
+  }
 
   if (!auth && createAccount) {
     // Create new account
@@ -345,13 +353,6 @@ const emailLogin = async (payload) => {
     throw new ApiError(status.BAD_REQUEST, "Invalid email address format.");
   }
 
-  if (!checkRateLimit(lowercaseEmail)) {
-    throw new ApiError(
-      status.TOO_MANY_REQUESTS,
-      "Too many login verification requests. Please try again later."
-    );
-  }
-
   const auth = await Auth.findOne({ email: lowercaseEmail });
 
   if (!auth) {
@@ -363,6 +364,21 @@ const emailLogin = async (payload) => {
 
   if (auth.isBlocked) {
     throw new ApiError(status.FORBIDDEN, "You are blocked. Contact support.");
+  }
+
+  if (!checkRateLimit(lowercaseEmail)) {
+    // If a valid OTP is already pending (sent by a concurrent register request), return success silently
+    if (auth.activationCode && auth.activationCodeExpire && Date.now() < auth.activationCodeExpire) {
+      return {
+        message: "Email verification code sent successfully",
+        email: lowercaseEmail,
+        expiresIn: "3 minutes",
+      };
+    }
+    throw new ApiError(
+      status.TOO_MANY_REQUESTS,
+      "Too many login verification requests. Please try again later."
+    );
   }
 
   return await sendEmailOtpInternal(auth, true);
