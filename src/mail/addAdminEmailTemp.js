@@ -96,13 +96,13 @@ const addAdminEmailTemp = (data) =>
               </table>
     
               <p>As an admin at Dodawork, you play a vital role in ensuring smooth and safe experience for our customers. Please log in to your account to get started.</p>
-              <p>If you have any questions or need any assistance, feel free to reach out to us at <a href="mailto:arifishtiaque.sparktech@gmail.com">arifishtiaque.sparktech@gmail.com</a>.</p>
+              <p>If you have any questions or need any assistance, feel free to reach out to us at <a href="mailto:${process.env.SUPPORT_MAIL}">${process.env.SUPPORT_MAIL}</a>.</p>
               <p>We look forward to working with you and wish you a great journey with us!</p>
               <p>Best regards,<br>The Dodawork Team</p>
             </div>
             <div class="footer">
               <p>&copy; Dodawork - All Rights Reserved.</p>
-              <p><a href="https://yourwebsite.com/privacy">Privacy Policy</a> | <a href="https://yourwebsite.com/contact">Contact Support</a></p>
+              <p><a href="${process.env.LANDING_PAGE/privacy-policy}">Privacy Policy</a> | <a href="${process.env.LANDING_PAGE/terms-conditions}">Terms & Condition</a></p>
             </div>
           </body>
         </html>

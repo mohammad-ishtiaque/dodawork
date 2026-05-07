@@ -74,14 +74,14 @@ const signUpEmailTemp = (data) => `
         <p>Thank you for registering with Dodawork. To activate your account, please use the following activation code:</p>
         <div class="code">${data.activationCode}</div>
         <p>Please enter this code on the activation page within the next <strong>${data.activationCodeExpire} minutes</strong>.</p>
-        <p>If you have any questions, please contact us at <a href="mailto:arifishtiaque.sparktech@gmail.com">arifishtiaque.sparktech@gmail.com</a>.</p>
+        <p>If you have any questions, please contact us at <a href="mailto:${process.env.SUPPORT_MAIL}">${process.env.SUPPORT_MAIL}</a>.</p>
         <p>Thank you,<br>The Dodawork Team</p>
       </div>
       <div class="footer">
         <p>&copy; Dodawork - All Rights Reserved.</p>
         <p>
-          <a href="https://yourwebsite.com/privacy">Privacy Policy</a> |
-          <a href="https://yourwebsite.com/contact">Contact Support</a>
+          <a href="${process.env.LANDING_PAGE}/privacy">Privacy Policy</a> |
+          <a href="${process.env.LANDING_PAGE}/contact">Contact Support</a>
         </p>
       </div>
     </body>

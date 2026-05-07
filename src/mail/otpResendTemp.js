@@ -87,7 +87,7 @@ const otpResendTemp = (data) => `
       </div>
       <div class="footer">
         <p>&copy; Dodawork - All Rights Reserved.</p>
-        <p>For support, contact us at <a href="mailto:arifishtiaque.sparktech@gmail.com">arifishtiaque.sparktech@gmail.com</a></p>
+        <p>For support, contact us at <a href="mailto:${process.env.SUPPORT_MAIL}">${process.env.SUPPORT_MAIL}</a></p>
       </div>
     </body>
   </html>

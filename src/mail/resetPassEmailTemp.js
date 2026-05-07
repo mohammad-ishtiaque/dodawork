@@ -91,8 +91,8 @@ const resetPassEmailTemp = (data) => `
       <div class="footer">
         <p>&copy; ${new Date().getFullYear()} Dodawork - All Rights Reserved.</p>
         <p>
-          <a href="https://yourwebsite.com/privacy">Privacy Policy</a> |
-          <a href="https://yourwebsite.com/contact">Contact Support</a>
+          <a href="${process.env.LANDING_PAGE}/privacy">Privacy Policy</a> |
+          <a href="${process.env.LANDING_PAGE}/contact">Contact Support</a>
         </p>
       </div>
     </body>
