@@ -416,6 +416,32 @@ const toggleProviderStatus = async (userData, payload) => {
   return provider;
 };
 
+// Toggle Provider Online / Offline
+const toggleOnlineStatus = async (userData, payload) => {
+  validateFields(payload, ['isOnline']);
+
+  const provider = await Provider.findOne({ authId: userData.authId }).sort({ createdAt: -1 });
+  if (!provider) {
+    throw new ApiError(status.NOT_FOUND, 'Provider not found');
+  }
+
+  provider.isOnline = payload.isOnline;
+  if (payload.isOnline) {
+    provider.lastOnlineAt = new Date();
+  }
+  await provider.save();
+
+  // When coming back online, match with any PENDING requests created while offline
+  if (payload.isOnline && provider.isVerified && provider.isActive) {
+    await matchProviderWithPendingRequests(provider);
+  }
+
+  return {
+    isOnline: provider.isOnline,
+    lastOnlineAt: provider.lastOnlineAt || null,
+  };
+};
+
 // Get Potential Requests for Provider
 // const getPotentialRequests = async (userData, query) => {
 //   // Find the LATEST provider by authId (same as getProviderProfile)
@@ -473,15 +499,25 @@ const getPotentialRequests = async (userData, query) => {
   // We need to handle the case where "COMPLETED" or other statuses are requested.
   const filterStatus = providerStatus;
 
-  // Base query: match this provider inside potentialProviders array
-  const baseQuery = ServiceRequest.find({
+  // Build the base filter
+  const requestFilter = {
     potentialProviders: {
       $elemMatch: {
         providerId: provider._id,
         status: filterStatus,
       },
     },
-  })
+    // Never show expired or cancelled requests to providers
+    status: { $nin: ['EXPIRED', 'CANCELLED'] },
+  };
+
+  // When browsing available leads, hide requests that already hit their provider cap
+  if (filterStatus === 'PENDING') {
+    requestFilter.$expr = { $lt: [{ $size: '$purchasedBy' }, '$maxProviders'] };
+  }
+
+  // Base query: match this provider inside potentialProviders array
+  const baseQuery = ServiceRequest.find(requestFilter)
     .populate("customerId", "name email phoneNumber")
     .populate("serviceCategory", "name icon")
     .lean();
@@ -1125,6 +1161,7 @@ module.exports = {
   getProviderProfile,
   updateProviderProfile,
   toggleProviderStatus,
+  toggleOnlineStatus,
   getPotentialRequests,
   getPotentialRequestById,
   handleRequestResponse,

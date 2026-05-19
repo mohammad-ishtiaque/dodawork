@@ -35,6 +35,11 @@ router
     auth(config.auth_level.provider),
     ProviderController.toggleProviderStatus
   )
+  .patch(
+    "/toggle-online",
+    auth(config.auth_level.provider),
+    ProviderController.toggleOnlineStatus
+  )
   .get(
     "/potential-requests",
     auth(config.auth_level.provider),

@@ -35,10 +35,10 @@ const findMatchingProviders = async (serviceRequestData) => {
 
   // Find providers who have this serviceCategory in their serviceCategories array
   const matchingProviders = await Provider.find({
-    serviceCategories: serviceCategory, // ✅ CORRECT: Check array inclusion
-    // ❌ REMOVED: subcategory (providers don't have subcategories)
+    serviceCategories: serviceCategory,
     isActive: true,
     isVerified: true,
+    isOnline: true,
   }).select("_id coveredRadius latitude longitude workingHours");
 
   const eligibleProviders = [];
@@ -138,6 +138,9 @@ const createServiceRequest = async (req) => {
   const pricing = await calculateLeadPrice(serviceRequestData);
   serviceRequestData.leadPrice = pricing.amount;
   serviceRequestData.currency = pricing.currency;
+
+  // Set expiry window: 48 hours from creation
+  serviceRequestData.expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
   const serviceRequest = await ServiceRequest.create(serviceRequestData);
 
@@ -513,10 +516,10 @@ const getAllProviderService = async (query) => {
 
   // Find providers who have this serviceCategory in their serviceCategories array
   const matchingProviders = await Provider.find({
-    serviceCategories: serviceCategory, // ✅ CORRECT: Check array inclusion
-    // ❌ REMOVED: subcategory (providers don't have subcategories)
+    serviceCategories: serviceCategory,
     isActive: true,
     isVerified: true,
+    isOnline: true,
   }).select("_id coveredRadius latitude longitude workingHours");
 
   const eligibleProviders = [];

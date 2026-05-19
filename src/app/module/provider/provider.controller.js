@@ -42,6 +42,16 @@ const toggleProviderStatus = catchAsync(async (req, res) => {
   });
 });
 
+const toggleOnlineStatus = catchAsync(async (req, res) => {
+  const result = await ProviderService.toggleOnlineStatus(req.user, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: result.isOnline ? "You are now online" : "You are now offline",
+    data: result,
+  });
+});
+
 const getPotentialRequests = catchAsync(async (req, res) => {
   const result = await ProviderService.getPotentialRequests(req.user, req.query);
   sendResponse(res, {
@@ -162,6 +172,7 @@ const ProviderController = {
   getProviderProfile,
   updateProviderProfile,
   toggleProviderStatus,
+  toggleOnlineStatus,
   getPotentialRequests,
   getPotentialRequestById,
   handleRequestResponse,

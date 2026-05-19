@@ -7,15 +7,19 @@ const LeadPurchase = require('../lead/LeadPurchase'); // If needed for reconcili
 const expireOldRequests = async () => {
     try {
         const now = new Date();
-        // Expire pending requests older than 24 hours (if no providers purchased/assigned)
-        // Adjust logic as needed. For now, using a placeholder expiration logic.
-        // Assuming 'expiresAt' is set, or we default to 24h
+        const fallback48h = new Date(now - 48 * 60 * 60 * 1000);
 
         const expired = await ServiceRequest.updateMany(
             {
                 status: { $in: ['PENDING', 'MATCHED'] },
-                // expiresAt: { $lt: now } // If we set expiresAt
-                createdAt: { $lt: new Date(now - 24 * 60 * 60 * 1000) } // 24h fallback
+                $or: [
+                    // expiresAt is a real Date and has passed
+                    { expiresAt: { $type: 'date', $lt: now } },
+                    // legacy requests created before expiresAt was added: use 48h fallback
+                    { expiresAt: null, createdAt: { $lt: fallback48h } },
+                    // service date has already passed — request is stale regardless
+                    { startDate: { $type: 'date', $lt: now } },
+                ]
             },
             { status: 'EXPIRED' }
         );

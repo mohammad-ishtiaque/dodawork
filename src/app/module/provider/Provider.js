@@ -137,6 +137,14 @@ const ProviderSchema = new Schema(
       default: 0
     },
 
+    isOnline: {
+      type: Boolean,
+      default: true,
+    },
+    lastOnlineAt: {
+      type: Date,
+      default: null,
+    },
     pendingUpdates: {
       type: Schema.Types.Mixed,
       default: null,
