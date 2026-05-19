@@ -31,7 +31,7 @@ const calculateLeadPrice = async (serviceRequest) => {
 
     return {
         amount: finalPrice,
-        currency: 'USD',
+        currency: 'CAD',
         breakdown: {
             basePriceInDollars: basePrice,
             finalPriceInCents: finalPrice
@@ -101,8 +101,8 @@ const createLeadCheckoutSession = async (providerId, requestId, payload) => {
             quantity: 1,
         }],
         mode: 'payment',
-        success_url: process.env.STRIPE_SUCCESS_URL || 'http://10.10.20.52:6002/payment/success?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url: process.env.STRIPE_CANCEL_URL || 'http://10.10.20.52:6002/payment/cancel',
+        success_url: process.env.STRIPE_SUCCESS_URL || 'https://api.dodawork.com/payment/success?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: process.env.STRIPE_CANCEL_URL || 'https://api.dodawork.com/payment/cancel',
         client_reference_id: providerId.toString(), // Store authId/providerId here 
         metadata: {
             providerId: provider._id.toString(),

@@ -18,7 +18,7 @@ const LeadPurchaseSchema = new Schema({
     },
     currency: {
         type: String,
-        default: 'USD'
+        default: 'CAD'
     },
     stripePaymentIntentId: {
         type: String,

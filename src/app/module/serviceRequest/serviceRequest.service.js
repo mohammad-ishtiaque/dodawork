@@ -720,7 +720,7 @@ const submitOffer = async (userData, payload) => {
   request.offers.push({
     provider: provider._id,
     proposedPrice: parseFloat(payload.proposedPrice),
-    currency: payload.currency || "USD",
+    currency: payload.currency || "CAD",
     estimatedDuration: payload.estimatedDuration,
     message: payload.message || "",
     status: "PENDING"

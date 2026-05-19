@@ -90,7 +90,7 @@ const ServiceRequestSchema = new Schema(
     },
     currency: {
       type: String,
-      default: "USD"
+      default: "CAD"
     },
     expiresAt: {
       type: Date,
@@ -128,7 +128,7 @@ const ServiceRequestSchema = new Schema(
       },
       currency: {
         type: String,
-        default: "USD"
+        default: "CAD"
       },
       estimatedDuration: {
         type: String,  // "2-3 days"
